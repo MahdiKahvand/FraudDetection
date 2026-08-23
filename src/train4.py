@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from data_prep import prepare_data
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
@@ -21,8 +22,6 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
-
-from data_prep import prepare_data
 
 # ============================================================
 # I. Definition Functions
@@ -239,7 +238,7 @@ def knn(
         zero_division=0
     )
 
-    print("Prediction distribution:")
+    print(f"Prediction distribution for k : {k}")
 
     print(
         np.unique(
@@ -247,6 +246,7 @@ def knn(
             return_counts=True
         )
     )
+    print()
 
     drawing(
         np.arange(len(X_test)),
@@ -348,7 +348,7 @@ def mlp(
 ):
 
     MLP = MLPClassifier(
-        hidden_layer_sizes=(64, 32),
+        hidden_layer_sizes=(128, 64),
         activation="relu",
         solver="adam",
         max_iter=100,
@@ -802,9 +802,6 @@ print(
 # 10. 5-Fold Stratified Cross Validation
 # ============================================================
 
-print(
-    "\n========== 5-Fold Stratified Cross Validation ==========\n"
-)
 
 cv = StratifiedKFold(
     n_splits=5,
@@ -858,7 +855,7 @@ cv_models = {
         (
             "model",
             MLPClassifier(
-                hidden_layer_sizes=(64, 32),
+                hidden_layer_sizes=(128, 64),
                 activation="relu",
                 solver="adam",
                 max_iter=100,
@@ -946,7 +943,7 @@ print(
         index=False
     )
 )
-
+print("\n\n")
 
 # ============================================================
 # 12. Confusion Matrix
@@ -961,3 +958,42 @@ draw_confusion_matrices(
         y_predict_MLP
     ]
 )
+
+
+
+# ============================================================
+# 13. Diffrent KNN valu
+# ============================================================
+
+print(
+    "\n========== different k in knn : 1, 5 ,20  ==========\n"
+)
+
+
+K = [1 ,5 ,20]
+
+df_knn_reprt = pd.DataFrame(columns=['model', 'ACCURACY', 'PRESISION' , 'RECALL' ,'F1'])
+
+for k in K:
+    (tarined_model_knn_report ,
+    y_prediction_knn_report,
+    accuracy_knn_report,
+    precision_knn_report,
+    recall_knn_report,
+    f1_knn_report) = knn(X_train_scaled ,X_test_scaled ,y_train ,y_test ,f"when k is :{k}",k)
+
+
+    
+
+    df_knn_reprt.loc[len(df_knn_reprt)] = [f"k is {k}", accuracy_knn_report, precision_knn_report ,recall_knn_report ,f1_knn_report]
+
+print(
+    df_knn_reprt.to_string(
+        index=False
+    )
+)
+
+
+
+
+
