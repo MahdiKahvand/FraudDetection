@@ -962,7 +962,7 @@ draw_confusion_matrices(
 
 
 # ============================================================
-# 13. Diffrent KNN valu
+# 13. Diffrent KNN valus
 # ============================================================
 
 print(
@@ -996,4 +996,33 @@ print(
 
 
 
+# ============================================================
+# 14. Diffrent Threshold for MLP
+# ============================================================
 
+
+print(
+    "\n========== Diffrent Threshold for MLP (0.3 ,0.5 ,0.7)  ==========\n"
+)
+
+thresholds = [0.3 ,0.5 ,0.7]
+
+df_thresholds = pd.DataFrame(columns=["threshold","accuracy" ,"Precision" ,"Recall" ,"F1"])
+
+
+
+for threshold in thresholds:
+    y_threshold = np.where(MLP.predict_proba(X_test_scaled)[:, 1] > threshold ,1 ,0)
+    accuracy_threshpld = accuracy_score(y_test ,y_threshold)
+    precision_threshpld = precision_score(y_test ,y_threshold)
+    recall_threshpld = recall_score(y_test ,y_threshold)
+    f1_threshpld = f1_score(y_test ,y_threshold)
+
+    df_thresholds.loc[len(df_thresholds)] = [threshold, accuracy_threshpld, precision_threshpld, recall_threshpld, f1_threshpld]
+
+
+print(
+    df_thresholds.to_string(
+        index=False
+    )
+)
