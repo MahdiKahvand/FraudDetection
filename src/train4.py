@@ -1,9 +1,9 @@
 import os
 
+import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from data_prep import prepare_data
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
@@ -22,6 +22,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
+
+from data_prep import prepare_data
 
 # ============================================================
 # I. Definition Functions
@@ -426,6 +428,11 @@ data_path = os.path.join(
 df, features, target = prepare_data(
     data_path
 )
+
+# df, features, target = prepare_data(
+#     '../data/creditcard.csv'
+# )
+
 
 
 # ============================================================
@@ -1009,10 +1016,10 @@ thresholds = [0.3 ,0.5 ,0.7]
 
 df_thresholds = pd.DataFrame(columns=["threshold","accuracy" ,"Precision" ,"Recall" ,"F1"])
 
-
+probability = MLP.predict_proba(X_test_scaled)[:, 1]
 
 for threshold in thresholds:
-    y_threshold = np.where(MLP.predict_proba(X_test_scaled)[:, 1] > threshold ,1 ,0)
+    y_threshold = np.where( probability > threshold ,1 ,0)
     accuracy_threshpld = accuracy_score(y_test ,y_threshold)
     precision_threshpld = precision_score(y_test ,y_threshold)
     recall_threshpld = recall_score(y_test ,y_threshold)
@@ -1026,3 +1033,30 @@ print(
         index=False
     )
 )
+
+
+# ============================================================
+# 15. Saving best model
+# ============================================================
+
+model_dir = "models"
+model_name = "bestmodel.pkl"
+scaler_name = "scaler.pkl"
+
+model_path = os.path.join(
+    ".." ,
+    model_dir ,
+    model_name
+)
+
+scaler_path = os.path.join(
+    ".." ,
+    model_dir ,
+    scaler_name
+)
+
+joblib.dump(MLP , model_path)
+
+joblib.dump(scaler , scaler_path)
+
+print("The best model saved")
